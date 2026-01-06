@@ -11,7 +11,7 @@ CXXLIBS    = $(ROOTLIBS)
 CC = g++ -std=c++11
 
 INCS = -I$(WCSIMDIR)/include
-LIBS = -L$(WCSIMDIR)/../WCSim-build/src -lWCSimRoot
+LIBS = -L$(WCSIMDIR)/build/src -lWCSimRoot
 #LIBS = -L$(WCSIMDIR) -lWCSimRoot
 
 all: $(TARGET)
