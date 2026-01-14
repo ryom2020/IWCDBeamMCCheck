@@ -1,4 +1,4 @@
-TARGET = CheckEvent 
+TARGET = fill_hist merge_hists draw_hists
 
 OBJ = 
 
