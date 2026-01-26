@@ -129,7 +129,10 @@ int main(int argc, char* argv[]){
   TH1F *h_mc_hitT_OD = new TH1F("h_mc_hitT_OD",";Hittime (ns);Hits",100, 0, 1000);
   TH1F *h_mc_Nhit_ID = new TH1F("h_mc_Nhit_ID",";Number of hit PMTs;Events",1000, 0, 1000);
   TH1F *h_mc_Nhit_OD = new TH1F("h_mc_Nhit_OD",";Number of hit PMTs;Events",500, 0, 500);
-  
+
+  TH2F *h_mc_vtx_xz_after_cut = new TH2F("h_mc_vtx_xz_after_cut",";X (cm);Z (cm);",100, -500, 500, 100, -500, 500);
+  TH2F *h_mc_vtx_zy_after_cut = new TH2F("h_mc_vtx_zy_after_cut",";Z (cn);Y (cm);",100, -500, 500, 100, -500, 500);
+
   //=== 1-ring reconstruction
   TH1F *h_fq_diffvtx_e = new TH1F("h_fq_diffvtx_e",";Vertex diff. (cm);Events",50, 0, 100);
   TH1F *h_fq_diffvtx_mu = new TH1F("h_fq_diffvtx_mu",";Vertex diff. (cm);Events",100, 0, 100);
@@ -141,6 +144,7 @@ int main(int argc, char* argv[]){
   TH1F *h_fq_pidlikelihood_mu = new TH1F("h_fq_pidlikelihood_mu","",100, -2000, 2000);
   TH2F *h_mc_leptonmom_vs_fq_mom_e = new TH2F("h_mc_leptonmom_vs_fq_mom_e",";True momentum (MeV/c);Reco. momentum (MeV/c);",100, 0, 1500, 100, 0, 1500);
   TH2F *h_mc_leptonmom_vs_fq_mom_mu = new TH2F("h_mc_leptonmom_vs_fq_mom_mu",";True momentum (MeV/c);Reco. momentum (MeV/c);",100, 0, 1500, 100, 0, 1500);
+
   
   
   //---Get the number of events
@@ -286,6 +290,10 @@ int main(int argc, char* argv[]){
       h_mc_leptonmom_vs_fq_mom_mu->Fill(mom_lepton, fqv->fq1rmom[isubev][imu]);
     }    
     
+    if( is_CCQE && !is_PC && is_IDhit ){
+      h_mc_vtx_xz_after_cut->Fill(vertex[0], vertex[2]);
+      h_mc_vtx_zy_after_cut->Fill(vertex[2], vertex[1]);
+    }
     
     if(is_nu){
       h_mc_numom->Fill(mom_nu);
@@ -323,85 +331,6 @@ int main(int argc, char* argv[]){
     
   } //// End of loop over events
 
-  /*
-  //TFile *outfile = new TFile("Hist.root","recreate");
-  TCanvas *c1 = new TCanvas("c1","",600,600);
-  float IDZ = 400.;//cm
-  float IDR = 350.;//cm
-  TEllipse *te_ID_xz = new TEllipse(0,0,IDR);
-  te_ID_xz->SetFillStyle(0);
-  te_ID_xz->SetLineColor(1);
-  te_ID_xz->SetLineWidth(3);
-  TBox *tb_ID_zy = new TBox(-IDR, -IDZ, IDR, IDZ);  
-  tb_ID_zy->SetFillStyle(0);
-  tb_ID_zy->SetLineColor(1);
-  tb_ID_zy->SetLineWidth(3);
-  
-  h_mc_vtx_xz->Draw("colz");
-  te_ID_xz->Draw("same");
-  c1->Print("figures/h_mc_vtx_xz.pdf");
-
-  h_mc_vtx_zy->Draw("colz");
-  tb_ID_zy->Draw("same");
-  c1->Print("figures/h_mc_vtx_zy.pdf");
-
-  h_mc_vtx_R->Draw();
-  c1->Print("figures/h_mc_vtx_R.pdf");
-  h_mc_numom->Draw();
-  c1->Print("figures/h_mc_numom.pdf");
-  h_mc_leptonmom->Draw();
-  c1->Print("figures/h_mc_leptonmom.pdf");
-  h_mc_nudir->Draw();
-  c1->Print("figures/h_mc_nudir.pdf");
-  h_mc_leptondir->Draw();
-  c1->Print("figures/h_mc_leptondir.pdf");
-  h_mc_mode->Draw();
-  c1->Print("figures/h_mc_mode.pdf");
-  h_mc_hitSumQ_ID->Draw();
-  c1->SetLogy(1);
-  c1->Print("figures/h_mc_hitSumQ_ID.pdf");
-  c1->SetLogy(0);
-  h_mc_hitT_ID->Draw();
-  c1->Print("figures/h_mc_hitT_ID.pdf");
-  h_mc_hitSumQ_OD->Draw();
-  c1->SetLogy(1);
-  c1->Print("figures/h_mc_hitSumQ_OD.pdf");
-  c1->SetLogy(0);
-  h_mc_hitT_OD->Draw();
-  c1->Print("figures/h_mc_hitT_OD.pdf");
-  h_mc_Nhit_ID->Draw();
-  c1->SetLogy(1);
-  c1->Print("figures/h_mc_Nhit_ID.pdf");
-  c1->SetLogy(0);
-  h_mc_Nhit_OD->Draw();
-  c1->SetLogy(1);
-  c1->Print("figures/h_mc_Nhit_OD.pdf");
-  c1->SetLogy(0);
-  
-
-  h_fq_diffvtx_e->Draw();
-  c1->Print("figures/h_fq_diffvtx_e.pdf");
-  h_fq_diffvtx_mu->Draw();
-  c1->Print("figures/h_fq_diffvtx_mu.pdf");
-  h_fq_diffdir_e->Draw();
-  c1->Print("figures/h_fq_diffdir_e.pdf");
-  h_fq_diffdir_mu->Draw();
-  c1->Print("figures/h_fq_diffdir_mu.pdf");
-  h_fq_diffmom_e->Draw();
-  c1->Print("figures/h_fq_diffmom_e.pdf");
-  h_fq_diffmom_mu->Draw();
-  c1->Print("figures/h_fq_diffmom_mu.pdf");
-  h_fq_pidlikelihood_e->Draw();
-  c1->Print("figures/h_fq_pidlikelihood_e.pdf");
-  h_fq_pidlikelihood_mu->Draw();
-  c1->Print("figures/h_fq_pidlikelihood_mu.pdf");
-  h_mc_leptonmom_vs_fq_mom_e->Draw("colz");
-  c1->Print("figures/h_mc_leptonmom_vs_fq_mom_e.pdf");
-  h_mc_leptonmom_vs_fq_mom_mu->Draw("colz");
-  c1->Print("figures/h_mc_leptonmom_vs_fq_mom_mu.pdf");
-
-  */
-
   //save objects
   if(is_outroot){
     TFile *fout = new TFile(path_outroot,"recreate");
@@ -419,6 +348,9 @@ int main(int argc, char* argv[]){
     h_mc_hitSumQ_OD->Write();
     h_mc_hitT_OD->Write();
 
+    h_mc_vtx_xz_after_cut->Write();
+    h_mc_vtx_zy_after_cut->Write();
+  
     h_mc_Nhit_ID->Write();
     h_mc_Nhit_OD->Write();
 
