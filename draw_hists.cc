@@ -45,12 +45,12 @@ int main(int argc, char* argv[]){
 
   TH2F *h_mc_vtx_xz_after_cut = (TH2F*)fin->Get("h_mc_vtx_xz_after_cut");
   h_mc_vtx_xz_after_cut->Draw("colz");
-  te_ID_xz_after_cut->Draw("same");
+  te_ID_xz->Draw("same");
   c1->Print("figures/h_mc_vtx_xz_after_cut.pdf");
 
   TH2F *h_mc_vtx_zy_after_cut = (TH2F*)fin->Get("h_mc_vtx_zy_after_cut");
   h_mc_vtx_zy_after_cut->Draw("colz");
-  tb_ID_zy_after_cut->Draw("same");
+  tb_ID_zy->Draw("same");
   c1->Print("figures/h_mc_vtx_zy_after_cut.pdf");
 
   TH1F *h_mc_vtx_R = (TH1F*)fin->Get("h_mc_vtx_R");
