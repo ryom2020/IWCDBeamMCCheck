@@ -21,7 +21,7 @@ do
 	cd $path_outdir/$key
 	echo '#!/bin/bash' > ./job.sh
     	echo source $path_workdir/setenv.sh >> ./job.sh
-    	echo $path_workdir/CheckEvent -w $wcsimfile -f $fitqunfile -o $path_outdir/$key/hist.root >> ./job.sh
+    	echo $path_workdir/fill_hist -w $wcsimfile -f $fitqunfile -o $path_outdir/$key/hist.root >> ./job.sh
 	chmod +x ./job.sh
 	sbatch $path_workdir/submit_job.sh
     fi
