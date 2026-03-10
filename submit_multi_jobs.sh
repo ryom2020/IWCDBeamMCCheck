@@ -10,7 +10,7 @@ path_workdir=/project/6008045/ryom/HK_beta_prod_IWCD/analysis/IWCDBeamMCCheck
 
 path_outdir=$path_workdir/out
 
-for wcsimfile in `ls $path_wcsim/*`
+for wcsimfile in `ls ${path_wcsim}/${wcsimfilehead}*${wcsimfilefoot}`
 do
     key=${wcsimfile##*$wcsimfilehead}
     key=${key%$wcsimfilefoot}
@@ -23,7 +23,10 @@ do
     	echo source $path_workdir/setenv.sh >> ./job.sh
     	echo $path_workdir/fill_hist -w $wcsimfile -f $fitqunfile -o $path_outdir/$key/hist.root >> ./job.sh
 	chmod +x ./job.sh
-	sbatch $path_workdir/submit_job.sh
+
+	### job submission
+	sbatch $path_workdir/submit_job.sh ###for sbatch
+	# pjsub -L rscgrp=atmpd -j -o ./log.log ./job.sh ###for pjsub
     fi
 
 done
