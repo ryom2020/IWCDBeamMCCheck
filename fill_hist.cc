@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
   }
   
   if(argc==1 || !is_wcsim || !is_outroot){
-    std::cout<<"Usage: ./CheckEvent -w /path/to/wcsimout.root -f /path/to/fitqunout.root -o /path/to/output.root"<<std::endl;
+    std::cout<<"Usage: ./fill_hist -w /path/to/wcsimout.root -f /path/to/fitqunout.root -o /path/to/output.root"<<std::endl;
     return -1;
   }
 
@@ -262,33 +262,36 @@ int main(int argc, char* argv[]){
 
     int ie=1, imu=2, ipi=3;
     int isubev=0;
-    
-    if(is_nueCCQE && !is_PC && is_IDhit){
-      TVector3 fqvtx(fqv->fq1rpos[isubev][ie]);
-      float distance_vtx = (vertex - fqvtx).Mag();
-      h_fq_diffvtx_e->Fill(distance_vtx);
-      TVector3 fqdir(fqv->fq1rdir[isubev][ie]);
-      h_fq_diffdir_e->Fill(fqdir.Angle(dir_lepton)*180/3.14);
-      float relmom = (fqv->fq1rmom[isubev][ie] - mom_lepton)/mom_lepton;
-      h_fq_diffmom_e->Fill(relmom);
-      //---pid with smaller nll is selected.
-      float pidl = fqv->fq1rnll[isubev][imu] - fqv->fq1rnll[isubev][ie];
-      h_fq_pidlikelihood_e->Fill(pidl);
-      h_mc_leptonmom_vs_fq_mom_e->Fill(mom_lepton, fqv->fq1rmom[isubev][ie]);
+
+    if(is_fq){
+      if(is_nueCCQE && !is_PC && is_IDhit){
+	TVector3 fqvtx(fqv->fq1rpos[isubev][ie]);
+	float distance_vtx = (vertex - fqvtx).Mag();
+	h_fq_diffvtx_e->Fill(distance_vtx);
+	TVector3 fqdir(fqv->fq1rdir[isubev][ie]);
+	h_fq_diffdir_e->Fill(fqdir.Angle(dir_lepton)*180/3.14);
+	float relmom = (fqv->fq1rmom[isubev][ie] - mom_lepton)/mom_lepton;
+	h_fq_diffmom_e->Fill(relmom);
+	//---pid with smaller nll is selected.
+	float pidl = fqv->fq1rnll[isubev][imu] - fqv->fq1rnll[isubev][ie];
+	h_fq_pidlikelihood_e->Fill(pidl);
+	h_mc_leptonmom_vs_fq_mom_e->Fill(mom_lepton, fqv->fq1rmom[isubev][ie]);
+      }
+      if(is_numuCCQE && !is_PC && is_IDhit){
+	TVector3 fqvtx(fqv->fq1rpos[isubev][imu]);
+	float distance_vtx = (vertex - fqvtx).Mag();
+	h_fq_diffvtx_mu->Fill(distance_vtx);
+	TVector3 fqdir(fqv->fq1rdir[isubev][imu]);
+	h_fq_diffdir_mu->Fill(fqdir.Angle(dir_lepton)*180/3.14);
+	float relmom = (fqv->fq1rmom[isubev][imu] - mom_lepton)/mom_lepton;
+	h_fq_diffmom_mu->Fill(relmom);
+	//---pid with smaller nll is selected.
+	float pidl = fqv->fq1rnll[isubev][imu] - fqv->fq1rnll[isubev][ie];
+	h_fq_pidlikelihood_mu->Fill(pidl);
+	h_mc_leptonmom_vs_fq_mom_mu->Fill(mom_lepton, fqv->fq1rmom[isubev][imu]);
+      }
+      
     }
-    if(is_numuCCQE && !is_PC && is_IDhit){
-      TVector3 fqvtx(fqv->fq1rpos[isubev][imu]);
-      float distance_vtx = (vertex - fqvtx).Mag();
-      h_fq_diffvtx_mu->Fill(distance_vtx);
-      TVector3 fqdir(fqv->fq1rdir[isubev][imu]);
-      h_fq_diffdir_mu->Fill(fqdir.Angle(dir_lepton)*180/3.14);
-      float relmom = (fqv->fq1rmom[isubev][imu] - mom_lepton)/mom_lepton;
-      h_fq_diffmom_mu->Fill(relmom);
-      //---pid with smaller nll is selected.
-      float pidl = fqv->fq1rnll[isubev][imu] - fqv->fq1rnll[isubev][ie];
-      h_fq_pidlikelihood_mu->Fill(pidl);
-      h_mc_leptonmom_vs_fq_mom_mu->Fill(mom_lepton, fqv->fq1rmom[isubev][imu]);
-    }    
     
     if( is_CCQE && !is_PC && is_IDhit ){
       h_mc_vtx_xz_after_cut->Fill(vertex[0], vertex[2]);
@@ -305,7 +308,7 @@ int main(int argc, char* argv[]){
     if(is_lepton){
       h_mc_leptonmom->Fill(mom_lepton);
       if(is_nu) h_mc_leptondir->Fill(dir_lepton.Angle(dir_nu)*180/3.14);
-    }
+    }    
     
     //---Get ID hit PMT information
     for (int i=0; i<ncherenkovdigihits; i++) {
@@ -354,16 +357,19 @@ int main(int argc, char* argv[]){
     h_mc_Nhit_ID->Write();
     h_mc_Nhit_OD->Write();
 
-    h_fq_diffvtx_e->Write();
-    h_fq_diffvtx_mu->Write();
-    h_fq_diffdir_e->Write();
-    h_fq_diffdir_mu->Write();
-    h_fq_diffmom_e->Write();
-    h_fq_diffmom_mu->Write();
-    h_fq_pidlikelihood_e->Write();
-    h_fq_pidlikelihood_mu->Write();
-    h_mc_leptonmom_vs_fq_mom_e->Write();
-    h_mc_leptonmom_vs_fq_mom_mu->Write();
+    if(is_fq){
+      h_fq_diffvtx_e->Write();
+      h_fq_diffvtx_mu->Write();
+      h_fq_diffdir_e->Write();
+      h_fq_diffdir_mu->Write();
+      h_fq_diffmom_e->Write();
+      h_fq_diffmom_mu->Write();
+      h_fq_pidlikelihood_e->Write();
+      h_fq_pidlikelihood_mu->Write();
+      h_mc_leptonmom_vs_fq_mom_e->Write();
+      h_mc_leptonmom_vs_fq_mom_mu->Write();
+    }
+    
     fout->Close();
   }
   return 0;
